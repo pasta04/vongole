@@ -1,0 +1,10 @@
+const builder = require('electron-builder');
+
+builder.build({
+    config: {
+        'appId': 'com.pasta04.vongole',
+        'mac':{
+            'target': 'zip',
+        }
+    }
+});

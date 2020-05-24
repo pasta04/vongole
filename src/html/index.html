@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <!-- CSSの読み込み Material Design Lite -->
+    <link rel="stylesheet" href="../../node_modules/material-design-lite/material.min.css" />
+    <script src="../../node_modules/material-design-lite/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <!-- CSSの読み込み 自作CSS -->
+    <link rel="stylesheet" href="../../public/css/style.css" />
+  </head>
+  <body>
+    <div class="maincontaints">
+      <!-- 板一覧 -->
+      <div class="boardList">
+        <button id="addBoard" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" style="width: 100%;">
+          板追加
+        </button>
+        <div id="boardList"></div>
+      </div>
+      <!-- スレ一覧 -->
+      <div class="threadList">
+        <!-- ボタン、板名 -->
+        <div></div>
+        <div id="threadList"></div>
+      </div>
+    </div>
+
+    <!-- 掲示板追加ダイアログ -->
+    <dialog id="dialog-add-board" class="mdl-dialog">
+      <div class="mdl-dialog__content">
+        掲示板追加
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <input class="mdl-textfield__input" type="text" id="dialog-add-board-name" value="" />
+          <label class="mdl-textfield__label" for="dialog-add-board-name">名前</label>
+        </div>
+
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <input class="mdl-textfield__input" type="text" id="dialog-add-board-url" pattern="http.?://.+/$" value="" />
+          <label class="mdl-textfield__label" for="dialog-add-board-url">URL</label>
+        </div>
+      </div>
+      <div class="mdl-dialog__actions">
+        <button type="button" id="dialog-add-board-button-cancel" class="mdl-button close">キャンセル</button>
+        <button type="button" id="dialog-add-board-button-ok" class="mdl-button mdl-button--raised mdl-button--colored">追加</button>
+      </div>
+    </dialog>
+    <!-- /確認ダイアログ -->
+    <script>
+      require('../../dist/scripts');
+
+      const setIntervalSyncMDL = () => {
+        setInterval('syncMDL();', 200);
+      };
+      const syncMDL = () => {
+        // componentHandler.downgradeAllComponentThatNotInClass();
+        componentHandler.upgradeDom();
+      };
+
+      window.onload = () => setIntervalSyncMDL();
+    </script>
+  </body>
+</html>

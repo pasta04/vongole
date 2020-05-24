@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <!-- CSSの読み込み Material Design Lite -->
+    <link rel="stylesheet" href="../../node_modules/material-design-lite/material.min.css" />
+    <script src="../../node_modules/material-design-lite/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <!-- CSSの読み込み 自作CSS -->
+    <link rel="stylesheet" href="../../public/css/style-server.css" />
+    <script>
+      require('../../dist/scripts/chat');
+    </script>
+    <style>
+      body {
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="parent">
+      <!-- スレ -->
+      <div id="res-list" class="responseItemList"></div>
+      <!-- 書き込み -->
+      <div style="color: black; background-color: white; width: 100%; display: flex; margin-top: auto; margin-left: 2px; margin-right: 2px;">
+        <textarea class="mdl-textfield__input" type="text" rows="1" id="kakikomi" oninput="textareaResize(event)" onchange="textareaResize(event)"></textarea>
+        <button id="postResButton">▶</button>
+      </div>
+    </div>
+    <script>
+      const textareaResize = (event) => {
+        let elemId;
+        try {
+          elemId = event.srcElement.id;
+        } catch (e) {
+          elemId = event.target.id;
+        }
+        const str = event.target.value;
+        const matched = str.replace(/\r\n/g, '\n').match(/\n|\r/g);
+        let rows = matched ? matched.length + 1 : 1;
+
+        // テキストエリアの行数を制御
+        var m = document.getElementById(elemId);
+        var r = m.getAttribute('rows');
+        m.setAttribute('rows', rows);
+
+        // ウィンドウサイズを制御
+        // if (window.outerHeight < rows * 50) {
+        //   window.resizeTo(window.outerWidth, rows * 30);
+        // }
+      };
+    </script>
+  </body>
+</html>

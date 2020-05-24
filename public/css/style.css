@@ -1,0 +1,29 @@
+.maincontaints {
+  display: flex;
+  height: 100vh;
+}
+
+.boardList {
+  width: 300px;
+  background-color: rgb(212, 224, 224);
+  overflow-y: scroll;
+}
+
+.threadList {
+  width: calc(100vw - 300px);
+  background-color: rgb(212, 224, 224);
+  overflow-y: scroll;
+}
+
+.boardItem {
+  width: 100%;
+  text-align: left;
+}
+
+.mdl-tooltip {
+  max-width: initial;
+}
+
+.mdl-button {
+  text-transform: initial;
+}

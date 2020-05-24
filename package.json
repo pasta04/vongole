@@ -1,0 +1,53 @@
+{
+  "name": "vongole",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack -w",
+    "start": "electron . --asar",
+    "buildwin": "node electron-package.js win32 asar",
+    "buildmac": "node electron-package.js darwin asar",
+    "macbuildmemo": "echo macのビルドで --icon=icon.ico を指定するとなぜか The path argument must be one of type string, Buffer, or URL. Received type undefined って言われるので外しておく、あと管理者権限のコマンドプロンプトで実行してね（シンボリックリンク作れないので）",
+    "changecode": "chcp 65001"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pasta04/vongole.git"
+  },
+  "author": "pasta04",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pasta04/vongole/issues"
+  },
+  "homepage": "https://github.com/pasta04/vongole#readme",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "electron-json-storage": "^4.1.8",
+    "electron-log": "^4.1.1",
+    "electron-window-state": "^5.0.3",
+    "encoding-japanese": "^1.0.30",
+    "iconv-lite": "^0.5.0",
+    "material-design-lite": "^1.3.0"
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.0.2",
+    "@types/electron-json-storage": "^4.0.0",
+    "@types/encoding-japanese": "^1.0.15",
+    "@types/node": "^13.11.1",
+    "@typescript-eslint/eslint-plugin": "^2.29.0",
+    "@typescript-eslint/parser": "^2.29.0",
+    "electron": "^8.2.1",
+    "electron-packager": "^14.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "prettier": "^2.0.5",
+    "ts-loader": "^6.2.2",
+    "typescript": "^3.8.3",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.11",
+    "webpack-node-externals": "^1.7.2"
+  }
+}
