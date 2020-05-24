@@ -1,11 +1,18 @@
 import path from 'path';
 import storage from 'electron-json-storage';
 import log from 'electron-log';
+import electron from 'electron';
 
 class Config {
   constructor() {
     // 設定ファイル読み込み
-    storage.setDataPath(path.resolve(''));
+    let nowPath = electron.app.getAppPath();
+    if (nowPath.includes('Contents/Resources/app.asar')) {
+      nowPath = nowPath.replace('app.asar', '') + '../../../';
+    }
+    // const nowPath = path.resolve('')
+    log.info(`[Config] path = ${nowPath}`);
+    storage.setDataPath(nowPath);
   }
   getBoadList = () => {
     storage.get('boardList', (error: any, data: any) => {

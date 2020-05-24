@@ -1,3 +1,4 @@
 node_modules
 vongole-darwin-x64*
 vongole-win32-x64*
+.DS_Store
