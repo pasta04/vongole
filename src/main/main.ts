@@ -99,7 +99,7 @@ app.on('ready', () => {
   mainWin.setMenu(null);
 
   // レンダラーで使用するhtmlファイルを指定する
-  mainWin.loadURL(path.resolve(__dirname, '../src/html/index.html'));
+  mainWin.loadURL('file://' + path.resolve(__dirname, '../src/html/index.html'));
 
   // ウィンドウが閉じられたらアプリも終了
   mainWin.on('close', (event) => {
@@ -141,6 +141,8 @@ app.on('ready', () => {
         label: 'コメント',
         click: function () {
           globalThis.electron.window.chatWindow.focus();
+          globalThis.electron.window.chatWindow.show();
+          globalThis.electron.window.chatWindow.restore();
         },
       },
       {
@@ -159,6 +161,8 @@ app.on('ready', () => {
       await sleep(200);
       if (isDoubleClicked) return;
       globalThis.electron.window.chatWindow.focus();
+      globalThis.electron.window.chatWindow.show();
+      globalThis.electron.window.chatWindow.restore();
     });
     tray.on('double-click', (event) => {
       isDoubleClicked = true;
@@ -188,7 +192,7 @@ const createChatWindow = () => {
   chatWindow.minimize();
 
   // レンダラーで使用するhtmlファイルを指定する
-  chatWindow.loadURL(path.resolve(__dirname, '../src/html/chat.html'));
+  chatWindow.loadURL('file://' + path.resolve(__dirname, '../src/html/chat.html'));
 
   chatWindow.setTitle('vongole - thread');
   chatWindow.setMenu(null);
@@ -233,6 +237,8 @@ ipcMain.on(electronEvent.MAIN_OPEN_THREAD, async (event, url: string, name: stri
 
   await updateRes();
   globalThis.electron.window.chatWindow.focus();
+  globalThis.electron.window.chatWindow.show();
+  globalThis.electron.window.chatWindow.restore();
 });
 ipcMain.handle(electronEvent.MAIN_POST_KAKIKOMI, async (event, message: string) => {
   try {
