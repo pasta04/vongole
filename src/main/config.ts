@@ -6,11 +6,12 @@ import electron from 'electron';
 class Config {
   constructor() {
     // 設定ファイル読み込み
-    let nowPath = electron.app.getAppPath();
-    if (nowPath.includes('Contents/Resources/app.asar')) {
-      nowPath = nowPath.replace('app.asar', '') + '../../../';
-    }
+    // let nowPath = electron.app.getAppPath();
+    // if (nowPath.includes('Contents/Resources/app.asar')) {
+    //   nowPath = nowPath.replace('app.asar', '') + '../../../';
+    // }
     // const nowPath = path.resolve('')
+    const nowPath = electron.app.getPath('userData');
     log.info(`[Config] path = ${nowPath}`);
     storage.setDataPath(nowPath);
   }
