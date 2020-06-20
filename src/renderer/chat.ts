@@ -5,11 +5,18 @@ import { electronEvent, keyCode } from '../main/const';
 const ipcRenderer = electron.ipcRenderer;
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.debug('[renderer.js] DOM Content Loaded');
+  log.info('[renderer.js] DOM Content Loaded');
 
   (document.getElementById('postResButton') as HTMLInputElement).onclick = postRes;
 
   (document.getElementById('kakikomi') as HTMLInputElement).onkeydown = checkPostKey;
+});
+
+ipcRenderer.on(electronEvent.CHAT_INIT, (event: any, args: { boardId: string }) => {
+  log.info(`[CHAT_INIT] ${args.boardId}`);
+  const dom = document.getElementById('boardId') as HTMLInputElement;
+  log.info(dom);
+  dom.innerHTML = args.boardId;
 });
 
 // コメント表示
@@ -41,9 +48,11 @@ const postRes = async () => {
   const resMessage = (document.getElementById('kakikomi') as HTMLInputElement).value;
   if (!resMessage) return;
 
+  const boardId = (document.getElementById('boardId') as HTMLInputElement).innerHTML;
+
   // 書き込み
-  log.info(`[書き込み] ${resMessage}`);
-  const result = await ipcRenderer.invoke(electronEvent.MAIN_POST_KAKIKOMI, resMessage);
+  log.info(`[書き込み] [message] ${resMessage} [boardId] ${boardId}`);
+  const result = await ipcRenderer.invoke(electronEvent.MAIN_POST_KAKIKOMI, { message: resMessage, boardId });
 
   if (result) {
     // テキストを初期化

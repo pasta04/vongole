@@ -15,8 +15,15 @@
   overflow-y: scroll;
 }
 
+/** 板名1行 */
 .boardItem {
   width: 100%;
+  text-align: left;
+}
+
+/** 板名削除ボタン以外 */
+.boardName {
+  width: calc(100% - 30px);
   text-align: left;
 }
 

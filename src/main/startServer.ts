@@ -3,40 +3,47 @@ import { sleep } from './util';
 import { getRes as getBbsResponse } from './readBBS/getRes';
 import { electronEvent } from './const';
 
-let isGetting = false;
+const isGetting: { [url: string]: boolean } = {};
 const getResInterval = async () => {
   // log.info(globalThis?.electron?.data?.thread.url);
-  if (!globalThis?.electron?.data?.thread.url) {
+  if (!globalThis?.electron?.data || globalThis?.electron?.data?.thread.length === 0) {
     await sleep(5000);
     getResInterval();
     return;
   }
-  await updateRes();
+
+  const task = globalThis.electron.data.thread.map((thread, index) => {
+    // console.log(thread.url);
+    return updateRes(thread, index);
+  });
+  await Promise.all(task);
 
   await sleep(5000);
   getResInterval();
 };
 getResInterval();
 
-export const updateRes = async () => {
-  if (isGetting) return;
-  isGetting = true;
-  try {
-    const fetchResNum: number = globalThis.electron.data.thread.list[globalThis.electron.data.thread.list.length - 1]?.number ?? 1;
-    const lastResNum = globalThis.electron.data.thread.list[globalThis.electron.data.thread.list.length - 1]?.number ?? 0;
+export const updateRes = async (thread: typeof globalThis.electron.data.thread[0], index: number) => {
+  // log.info(`[updateRes] ${thread.url}  ${index}`);
 
-    const result = await getBbsResponse(globalThis.electron.data.thread.url, fetchResNum);
+  if (isGetting[thread.url]) return;
+  isGetting[thread.url] = true;
+  try {
+    const fetchResNum: number = thread.list[thread.list.length - 1]?.number ?? 1;
+    const lastResNum = thread.list[thread.list.length - 1]?.number ?? 0;
+
+    const result = await getBbsResponse(thread.getRes, thread.url, fetchResNum);
     // 指定したレス番は除外対象
     if (result.length > 0 && result[result.length - 1].number) {
       const newResult = result.filter((res) => (res.number as number) > lastResNum);
-      globalThis.electron.data.thread.list.push(...newResult);
+      thread.list.push(...newResult);
 
-      if (newResult.length > 0) sendDomForChatWindow(newResult);
+      if (newResult.length > 0) sendDomForChatWindow(newResult, index);
     }
   } catch (e) {
     log.error(e);
   }
-  isGetting = false;
+  isGetting[thread.url] = false;
 };
 
 export const createDom = (message: UserComment) => {
@@ -67,7 +74,8 @@ export const createDom = (message: UserComment) => {
   return domStr;
 };
 
-const sendDomForChatWindow = (messageList: UserComment[]) => {
+const sendDomForChatWindow = (messageList: UserComment[], index: number) => {
+  // log.info(`[sendDomForChatWindow] ${index}`);
   const domStr2 = messageList
     .map((message) => {
       const imgUrl = message.imgUrl && message.imgUrl.match(/^\./) ? '../../public/' + message.imgUrl : message.imgUrl;
@@ -78,7 +86,8 @@ const sendDomForChatWindow = (messageList: UserComment[]) => {
     })
     .map((message) => createDom(message))
     .join('\n');
-  globalThis.electron.window.chatWindow.webContents.send(electronEvent['show-comment'], { dom: domStr2 });
+
+  globalThis.electron.window.chatWindow[index].webContents.send(electronEvent['show-comment'], { dom: domStr2 });
 };
 
 export default {};

@@ -13,8 +13,13 @@ export const electronEvent = {
 
   MAIN_GET_ELECTRON_DATA: 'MAIN_GET_ELECTRON_DATA',
   MAIN_SET_ELECTRON_DATA: 'MAIN_SET_ELECTRON_DATA',
+
+  /** スレURLを元に板情報を取得 */
+  MAIN_FETCH_BOARDINFO: 'MAIN_FETCH_BOARDINFO',
   /** 板を追加 */
   MAIN_ADD_BOARDLIST: 'MAIN_ADD_BOARDLIST',
+  /** 板を削除 */
+  MAIN_DELETE_BOARDLIST: 'MAIN_DELETE_BOARDLIST',
 
   /** スレ一覧を開く */
   MAIN_GET_THREAD_LIST: 'MAIN_GET_THREAD_LIST',
@@ -27,6 +32,9 @@ export const electronEvent = {
 
   /** 書き込み */
   MAIN_POST_KAKIKOMI: 'MAIN_POST_KAKIKOMI',
+
+  /** レスウィンドウの初期化 */
+  CHAT_INIT: 'CHAT_INIT',
 };
 
 export const keyCode = {

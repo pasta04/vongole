@@ -10,15 +10,6 @@ import encoding from 'encoding-japanese';
 const NOT_MODIFIED = '304';
 const RANGE_NOT_SATISFIABLE = '416';
 
-/** 最終取得スレッド */
-let lastThreadUrl = '';
-/** 最終レス番号 */
-let lastResNumber = 0;
-/** 最終更新日時 */
-let lastModified: string | null = null;
-/** 最終バイト数 */
-let lastByte = 0;
-
 /** スレ一覧を読み込む */
 export const readBoard = async (boardUrl: string) => {
   const requestUrl = `${boardUrl}subject.txt`;
@@ -95,6 +86,22 @@ export const postRes = async (hostname: string, threadNumber: string, boardId: s
 };
 
 class Read5ch {
+  /** 最終取得スレッド */
+  private lastThreadUrl: string;
+  /** 最終レス番号 */
+  private lastResNumber: number;
+  /** 最終更新日時 */
+  private lastModified: string | null;
+  /** 最終バイト数 */
+  private lastByte: number;
+
+  constructor() {
+    this.lastThreadUrl = '';
+    this.lastResNumber = 0;
+    this.lastModified = null;
+    this.lastByte = 0;
+  }
+
   /**
    * レス読み込み
    * 引数で指定した板からレスを読む
@@ -105,10 +112,10 @@ class Read5ch {
   read = async (threadUrl: string, resNum: number) => {
     // log.info(`[Read5ch] threadUrl=${threadUrl} resNum=${resNum}`);
     // 板や最終日レス番号がかわったら最初からとり直す(lastmodifiと rangeのリセット)
-    if (threadUrl != lastThreadUrl || Number.isNaN(resNum) || resNum < lastResNumber) {
-      lastThreadUrl = threadUrl;
-      lastModified = null;
-      lastByte = 0;
+    if (threadUrl != this.lastThreadUrl || Number.isNaN(resNum) || resNum < this.lastResNumber) {
+      this.lastThreadUrl = threadUrl;
+      this.lastModified = null;
+      this.lastByte = 0;
       console.trace('[Read5ch.js]resete!!!!!!!!!!!!!!!!');
     } else {
       console.trace('noresete');
@@ -119,6 +126,7 @@ class Read5ch {
     //https://bbs.jpnkn.com/yudeunagi/dat/1572734724.dat
     const rep = /\/test\/read.cgi(\/.+)(\/.+)\//;
     const requestUrl = threadUrl.replace(rep, '$1/dat$2.dat');
+    // log.info(`[Read5ch][read] ${requestUrl} resNum=${resNum}`);
 
     /**
      * １．レス番号指定がない場合
@@ -129,7 +137,7 @@ class Read5ch {
      * ２－２．レス500、指定490とか
      *  490からそれ以降の分をあるだけ
      */
-    const range = lastByte;
+    const range = this.lastByte;
     //リクエストオプションの設定
     const options: AxiosRequestConfig = {
       url: requestUrl,
@@ -137,12 +145,12 @@ class Read5ch {
       timeout: 3 * 1000,
       responseType: 'arraybuffer',
       headers: {
-        'if-modified-since': lastModified,
+        'if-modified-since': this.lastModified,
         range: 'bytes=' + range + '-',
       },
     };
 
-    let responseJson;
+    let responseJson: UserComment[];
     //掲示板へのリクエスト実行
     try {
       const response = await axios(options);
@@ -151,24 +159,26 @@ class Read5ch {
       const headers: { [key: string]: string } = response.headers;
       // LastModifiedとRange更新処理
       if (headers['last-modified'] != null) {
-        lastModified = headers['last-modified'];
+        this.lastModified = headers['last-modified'];
       }
       // gzipで取得出来たら解凍処理も入れる
 
       // したらばAPIの文字コードはEUC-JPなのでUTF-8に変換する
       const str = iconv.decode(Buffer.from(response.data), 'Shift_JIS');
       // レスポンスオブジェクト作成、content-rangeがある場合とない場合で処理を分ける
-      if (headers['content-range'] == null || lastByte == 0) {
+      if (headers['content-range'] == null || this.lastByte == 0) {
         console.trace('[Read5ch.read]content-range=' + headers['content-range']);
-        responseJson = purseNewResponse(str, resNum);
+        const result = purseNewResponse(str, resNum);
+        responseJson = result.result;
+        this.lastResNumber = result.lastResNumber;
       } else {
         responseJson = purseDiffResponse(str, resNum);
       }
 
       // 取得バイト数表示
       if (headers['content-length'] != null && responseJson.length > 0) {
-        lastByte = lastByte + parseInt(headers['content-length']) - 1;
-        console.trace('[Read5ch.read]lastByte=' + lastByte);
+        this.lastByte = this.lastByte + parseInt(headers['content-length']) - 1;
+        console.trace('[Read5ch.read]lastByte=' + this.lastByte);
       }
     } catch (error) {
       responseJson = [];
@@ -202,7 +212,7 @@ const purseNewResponse = (res: string, resNum: number) => {
   const resArray = res.split(/\r\n|\r|\n/);
   // 新着なしなら戻る。
   if (resArray.length === 0) {
-    return result;
+    return { result, lastResNumber: resNum };
   }
   // 配列の最後に空の要素が入ることがあるので取り除く
   if (resArray[resArray.length - 1].length === 0) {
@@ -216,6 +226,7 @@ const purseNewResponse = (res: string, resNum: number) => {
     num = resNum - 1;
   }
 
+  // log.info(`num = ${num}  resArrayLength = ${resArray.length}   ${resArray[num]}`);
   // 1行ごとにパースする
   for (; num < resArray.length; num++) {
     // パースメソッド呼び出し
@@ -223,9 +234,8 @@ const purseNewResponse = (res: string, resNum: number) => {
       result.push(parseResponse(resArray[num], num + 1));
     }
   }
-  lastResNumber = num + 1;
   // パースしたオブジェクトの配列を返却
-  return result;
+  return { result, lastResNumber: num + 1 };
 };
 
 /**

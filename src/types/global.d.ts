@@ -1,11 +1,12 @@
 import { BrowserWindow } from 'electron';
+import ReadSitaraba from '../main/readBBS/readSitaraba';
 
 declare global {
   namespace electron {
     /** 各種ウィンドウ */
     let window: {
       mainWindow: BrowserWindow;
-      chatWindow: BrowserWindow;
+      chatWindow: BrowserWindow[];
     };
     let data: {
       /** 板一覧 */
@@ -37,8 +38,11 @@ declare global {
         boardId: string;
         /** スレ番号 */
         threadNumber: string;
+        /** レス一覧 */
         list: UserComment[];
-      };
+        /** レス読み込み関数 */
+        getRes: ReadSitaraba | ReadSitaraba;
+      }[];
     };
   }
 }

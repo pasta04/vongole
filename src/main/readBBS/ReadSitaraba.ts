@@ -71,7 +71,7 @@ export const postRes = async (hostname: string, threadNumber: string, boardId: s
 
   await axios.post(
     `${hostname}bbs/write.cgi/${boardId}/${threadNumber}/`,
-    `dir=${dir}&bbs=${bbs}&key=${threadNumber}&time=${new Date().getTime()}&name=&mail=sage&MESSAGE=${encodedKeyword}`,
+    `dir=${dir}&bbs=${bbs}&key=${threadNumber}&time=${new Date().getTime()}&name=&MAIL=sage&MESSAGE=${encodedKeyword}`,
     {
       headers: {
         Accept: '*/*',
@@ -197,7 +197,7 @@ const purseResponse = (res: string) => {
   //5:スレタイ
   //6:ID
   const splitRes = res.split('<>');
-  const resJson = {
+  const resJson: UserComment = {
     number: Number(splitRes[0]),
     name: splitRes[1],
     email: splitRes[2],
