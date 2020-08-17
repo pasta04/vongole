@@ -75,13 +75,16 @@ export const postRes = async (hostname: string, threadNumber: string, boardId: s
 
   const encodedKeyword = encoding.urlEncode(sjisArray as any);
   // log.info(encodeURIComponent.toString());
-
-  await axios.post(`${hostname}test/bbs.cgi`, `FROM=&MESSAGE=${encodedKeyword}&mail=sage&key=${threadNumber}&bbs=${boardId}`, {
+  log.info(`${hostname}test/bbs.cgi`);
+  log.info(`FROM=&MESSAGE=${encodedKeyword}&mail=sage&key=${threadNumber}&bbs=${boardId}`);
+  const result = await axios.post(`${hostname}test/bbs.cgi`, `FROM=&MESSAGE=${encodedKeyword}&mail=sage&key=${threadNumber}&bbs=${boardId}`, {
     headers: {
       Accept: '*/*',
       'Content-Type': 'application/x-www-form-urlencoded',
       'Accept-Encoding': 'gzip, deflate, br',
+      Cookie: 'MAIL="sage"; NAME=""',
     },
+    withCredentials: true,
   });
 };
 

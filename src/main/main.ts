@@ -283,7 +283,7 @@ ipcMain.on(electronEvent.MAIN_OPEN_THREAD, async (event, url: string, name: stri
     const chatWindow = createChatWindow();
     globalThis.electron.window.chatWindow.push(chatWindow);
 
-    await sleep(200);
+    await sleep(500);
     globalThis.electron.window.chatWindow[windowIndex].webContents.send(electronEvent.CHAT_INIT, { boardId: boardId });
   }
 
@@ -301,7 +301,10 @@ ipcMain.on(electronEvent.MAIN_OPEN_THREAD, async (event, url: string, name: stri
 ipcMain.handle(electronEvent.MAIN_POST_KAKIKOMI, async (event, args: { message: string; boardId: string }) => {
   try {
     const index = globalThis.electron.data.thread.findIndex((thread) => thread.boardId === args.boardId);
-    if (index === -1) return;
+    if (index === -1) {
+      log.warn('書き込み要求があったけど板IDが見つからない' + args.boardId);
+      return;
+    }
     const thread = globalThis.electron.data.thread[index];
 
     await postResponse(thread.hostname, thread.threadNumber, thread.boardId, args.message);

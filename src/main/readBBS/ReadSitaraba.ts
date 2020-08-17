@@ -69,7 +69,7 @@ export const postRes = async (hostname: string, threadNumber: string, boardId: s
   /** 番号 */
   const bbs = boardId.split('/')[1];
 
-  await axios.post(
+  const result = await axios.post(
     `${hostname}bbs/write.cgi/${boardId}/${threadNumber}/`,
     `dir=${dir}&bbs=${bbs}&key=${threadNumber}&time=${new Date().getTime()}&name=&MAIL=sage&MESSAGE=${encodedKeyword}`,
     {
@@ -78,7 +78,9 @@ export const postRes = async (hostname: string, threadNumber: string, boardId: s
         'Content-Type': 'application/x-www-form-urlencoded',
         'Accept-Encoding': 'gzip, deflate, br',
         Referer: `${hostname}${boardId}/`,
+        Cookie: 'MAIL="sage"; NAME=""',
       },
+      withCredentials: true,
     },
   );
 };
